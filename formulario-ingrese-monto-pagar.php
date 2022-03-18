@@ -58,6 +58,7 @@
     }
 
     .form-open-value .form-instructions {
+        margin:10px;
         font-weight: 100;
         font-size: 1rem;
     }
@@ -67,17 +68,31 @@
     }
 
     .form-open-value .message-confirmation-name {
+        margin-top: 25px;
         color: #007bff;
-        font-weight: 900;
+        font-weight: 700;
     }
     .form-open-value .message-confirmation-lastname {
         color: #007bff;
-        font-weight: 900;
+        font-weight: 700;
+    }
+    .form-open-value .message-confirmation-email {
+        color: #007bff;
+        font-size: 17px;
+        font-weight: 400;
+        margin-bottom: 25px;
     }
     .form-open-value .message-confirmation-amount {
         color: #007bff;
         font-weight: 900;
     }
+    .form-open-value .style-payment-button {
+        margin-top: 25px;
+    }
+    .form-open-value .style-payment-gateway-logo {
+        width: 35%;
+    }
+    
 
     .hanabiImage img {
         width: 70%;
@@ -131,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['btnFormOpenValue']))
         setlocale(LC_MONETARY, 'es_PE');
         $username = 'sk_a8911895d40e493587ba2d066a6f7624';
         $URL .= '/v1/mdtoknue6hyxbmr2qk1o/checkouts';
-       
+
     }
     // credenciales de cuenta dashboard en DOLARES
     else if ($currencySelected == "USD")
@@ -146,8 +161,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['btnFormOpenValue']))
     $customer = array(
         'name' => trim($_POST['txtName']) ,
         'last_name' => trim($_POST['txtLastname']) ,
-        'phone_number' => '4423456723',
-        'email' => 'juan.vazquez@empresa.com.mx'
+        'phone_number' => "",
+        'email' => trim($_POST['txtEmail'])
     );
 
     $chargeRequest = array(
@@ -155,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['btnFormOpenValue']))
         'description' => trim($_POST['description']) ,
         'order_id' => time() ,
         'currency' => $currencySelected,
-        'redirect_url' => 'http://www.openpay.mx/index.html',
+        'redirect_url' => $_POST['approvedResponseUrl'],
         'expiration_date' => "2024-08-31 12:50",
         'send_email' => false,
         'customer' => $customer,
@@ -178,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['btnFormOpenValue']))
 
     $response = curl_exec($ch);
     curl_close($ch);
-    echo trim($_POST['$response']);
+
     ConfimacionDatosFormularioMontoAbierto($response);
 }
 
@@ -187,6 +202,8 @@ class OpenPay_Model
     // public $apikey;
     public $name;
     public $lastname;
+    public $email;
+    public $phoneNumber;
     public $urlRedirectLinkPayment;
     public $merchantId;
     public $accountId;
@@ -214,6 +231,7 @@ class OpenPay_Model
     public $urlImgLogo;
     public $urlImgBackground;
     public $messagePaymentConfirmation;
+    public $urlPaymentGatewayLogo;
 }
 
 function ConfimacionDatosFormularioMontoAbierto($data)
@@ -230,6 +248,8 @@ function ConfimacionDatosFormularioMontoAbierto($data)
 
     $openPay->name = trim($_POST['txtName']);
     $openPay->lastname = trim($_POST['txtLastname']);
+    $openPay->email = trim($_POST['txtEmail']);
+    $openPay->phoneNumber = trim($_POST['txtPhoneNumber']);
     // $openPay->apikey = "eUUdi6J4qPr5qFQ75l1ES5Cvd3";
     $openPay->urlRedirectLinkPayment = json_decode($data)->checkout_link;
     $openPay->merchantId = trim($_POST['merchantId']);
@@ -250,6 +270,7 @@ function ConfimacionDatosFormularioMontoAbierto($data)
     $openPay->messagePaymentButton = trim($_POST['messagePaymentButton']);
     $openPay->messagePaymentTitle = trim($_POST['messagePaymentTitle']);
     $openPay->messagePaymentConfirmation = trim($_POST['messagePaymentConfirmation']);
+    $openPay->urlPaymentGatewayLogo = trim($_POST['urlPaymentGatewayLogo']);
 
     // sSignature formaat = hash('md5',"11111~11111~11111~5~PEN");
     // $openPay->signature = GenerateSignature($openPay->apikey, $openPay->merchantId, $openPay->referenceCode, $openPay->amount, $openPay->currency);
@@ -283,7 +304,7 @@ function RenderOpenValueButtonHTML($openPay)
 
     echo '<nav class="navbar navbar-light bg-dark">';
     echo '<a class="navbar-brand" href="#">';
-    echo '<img src="' . $openPay->urlImgLogo . '" width="215" height="63" alt="">';
+    echo '<img src="' . $openPay->urlImgLogo . '" width="auto" height="63" alt="">';
     echo '</a>';
     echo '</nav>';
 
@@ -292,18 +313,20 @@ function RenderOpenValueButtonHTML($openPay)
 
     // echo '<div class="container">';
     echo '<h1 class="form-title">' . $openPay->messagePaymentTitle . '</h1>';
-    echo '<br></br>';
-
+    // echo '<br></br>';
     echo '<h4 class="message-confirmation-name">' . $openPay->name . '</h4>';
     echo '<h4 class="message-confirmation-lastname">' . $openPay->lastname . '</h4>';
+    echo '<h4 class="message-confirmation-email">' . $openPay->email . '</h4>';
+    // echo '<h4 class="message-confirmation-phoneNumber">' . $openPay->phoneNumber . '</h4>';
+    
+
     echo '<h4 class="message-confirmation">' . $openPay->messagePaymentConfirmation . '</h4>';
     // echo '<h4 class="message-confirmation-amount">'. money_format('%=*(#10.2n', $openPay->amount) . ' ' .  $openPay->currency . '</h4>';
     echo '<h4 class="message-confirmation-amount">' . money_format('%=*(#10.2n', $openPay->amount) . '</h4>';
     // echo '<div class="alert alert-primary" role="alert">';
     // echo 'Usted pagar谩 la suma de :' . $openPay->amount . 'nuevos soles.';
     // echo '</div>';
-    // echo '<input class="btn btn-lg btn-primary btn-block" name="Submit"        type="submit"  value="' . $openPay->messagePaymentButton . '"onclick="this.form.urlOrigen.value = //window.location.href;">';
-    echo '<input type="image" border="0" alt="" src="http://www.payulatam.com/img-secure-2015/boton_pagar_pequeno.png" onclick="this.form.urlOrigen.value = window.location.href;">';
+    echo '<input class="btn btn-lg btn-primary btn-block style-payment-button" name="Submit" type="submit"  value="' . $openPay->messagePaymentButton . '"onclick="this.form.urlOrigen.value = //window.location.href;">';
     echo '<input name="merchantId"    type="hidden"  value="' . $openPay->merchantId . '">';
     echo '<input name="accountId"     type="hidden"  value="' . $openPay->accountId . '">';
     echo '<input name="description"   type="hidden"  value="' . $openPay->description . '">';
@@ -323,9 +346,10 @@ function RenderOpenValueButtonHTML($openPay)
     echo '<input name="pendingResponseUrl" type="hidden"  value="' . $openPay->pendingResponseUrl . '">';
     echo '<input name="signature"     type="hidden"  value="' . $openPay->signature . '">';
 
-    echo '<br></br>';
+    // echo '<br></br>';
     echo '<p class="form-instructions">' . $openPay->messagePaymentInstructions . '</p>';
-    echo '<p class="mt-5 mb-3 text-muted">' . $openPay->messagePaymentCopyRight . '</p>';
+    echo '<input type="image" class="style-payment-gateway-logo" border="0" alt="" src="' . $openPay->urlPaymentGatewayLogo . '" onclick="this.form.urlOrigen.value = window.location.href;">';
+    echo '<p class="mt-3 mb-1 text-muted">' . $openPay->messagePaymentCopyRight . '</p>';
     // echo '</div>';
     echo '</form>';
     echo '</div>';
@@ -340,4 +364,4 @@ function RenderOpenValueButtonHTML($openPay)
     session_destroy();
 }
 
-?>
+?> 

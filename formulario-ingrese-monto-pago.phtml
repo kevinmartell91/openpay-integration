@@ -1,25 +1,25 @@
 <?php
-    // Texto editable que se muestra en el formulario
-    $messageWebTabTitle = "Formulario de Pago";
-    $messagePaymentTitle = "Formulario de Pago";
-    $messagePaymentRadioSoles = "S/. Soles";
-    $messagePaymentRadioDolares = "$ USD";
-    $messagePaymentProductDescription = "Pago por servicios de transporte de Hanabitours S.A.C";
-    $messagePaymentButton = "Continuar";
-    $messagePaymentInstructions = "Este formulario le permtirá ingresar el monto a pagar por los servicios que solicita. Una vez ingresado el monto será redireccionado a la plataforma de pago OpenPay.";
-    $messagePaymentCopyRight = "© 2017-2022 - Hanabitours - Perú";
-    $messagePaymentConfirmation = "Usted pagará la suma de:";
-    
-    //Urls de logotipo e imagen de fondo
-    $urlImgLogo = "https://imagizer.imageshack.com/v2/1600x1200q90/922/4QNR8K.png";
-    $urlImgBackground = "https://imagizer.imageshack.com/v2/1600x1200q90/924/OukUFQ.jpg";
+// Texto editable que se muestra en el formulario
+$messageWebTabTitle = "Formulario de Pago";
+$messagePaymentTitle = "Formulario de Pago";
+$messagePaymentRadioSoles = "S/. Soles";
+$messagePaymentRadioDolares = "$ USD";
+$messagePaymentProductDescription = "Pago por servicios de transporte de Hanabitours S.A.C";
+$messagePaymentButton = "Continuar";
+$messagePaymentInstructions = "Este formulario le permtirá ingresar el monto a pagar por los servicios que solicita. Una vez ingresado el monto, usted será redireccionado a la plataforma de pago";
+$messagePaymentCopyRight = "© 2017-2022 - Hanabitours - Perú";
+$messagePaymentConfirmation = "Usted pagará la suma de:";
 
-    // Url de respuestas Aprovado, rechazado y pendiente , respectivamente
-    $approvedResponseUrl = "http://www.hanabitours.com/pago-exitoso.phtml";
-    $declinedResponseUrl = "http://www.hanabitours.com";
-    $pendingResponseUrl = "http://www.hanabitours.com";
-    
-       
+//Urls de logotipo e imagen de fondo
+$urlImgLogo = "https://imagizer.imageshack.com/v2/1600x1200q90/922/4QNR8K.png";
+$urlImgBackground = "https://imagizer.imageshack.com/v2/1600x1200q90/924/OukUFQ.jpg";
+
+// Url de respuestas Aprovado, rechazado y pendiente , respectivamente
+$approvedResponseUrl = "https://www.hanabitours.com";
+$declinedResponseUrl = "http://www.hanabitours.com";
+$pendingResponseUrl = "http://www.hanabitours.com";
+$urlPaymentGatewayLogo = "https://api.openpay.pe/img/icons/logoOpenpayBlue.svg";
+
 ?>
 
 <!DOCTYPE html>
@@ -102,8 +102,31 @@
             font-weight: 150;
             font-size: 2.5rem;
         }
-
-        .form-open-value .form-input-amount {
+        
+        .form-open-value .float-form-line {
+            padding: 2px;
+        }
+        
+        .form-open-value .float-form-line .form-input-text {
+            text-align: center;
+            font-size: 1rem;
+            position: relative;
+            box-sizing: border-box;
+            display: block;
+            width: 50%;
+            float: left;
+            height: calc(2.25rem + 2px);
+            padding: .375rem .75rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
+            transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+        
+        .form-open-value .form-input-email {
             text-align: center;
             font-size: 1rem;
             position: relative;
@@ -120,8 +143,8 @@
             border-radius: .25rem;
             transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
         }
-        
-        .form-open-value .form-input-text {
+
+        .form-open-value .form-input-amount {
             text-align: center;
             font-size: 1rem;
             position: relative;
@@ -147,6 +170,10 @@
         .form-open-value .form-radio-currencies {
             margin: 1rem;
         }
+        .form-open-value .style-payment-gatewway-logo {
+            width: 35%;
+        }
+    
 
         .hanabiImage img {
             width: 70%;
@@ -179,7 +206,7 @@
         <!-- <div class="row"> -->
         <nav class="navbar navbar-light bg-dark">
             <a class="navbar-brand" href="#">
-                <img src="<?php echo $urlImgLogo ?>" width="215" height="63" alt="">
+                <img src="<?php echo $urlImgLogo ?>" width="auto" height="63" alt="">
             </a>
         </nav>
         
@@ -187,10 +214,14 @@
             <form name="formOpenValue" class="form-open-value" method="post" action="backend.php">
                 <h1 class="form-title"><?php echo $messagePaymentTitle ?></h1>
                 <br></br>
-                <input class="form-input-text" type="text" name="txtName" id="txtName" placeholder="Nombres" pattern="[a-zA-Z]{1,}" autofocus="" required>
-                <input class="form-input-text" type="text" name="txtLastname" id="txtLastname" placeholder="Apellidos" pattern="[a-zA-Z]{1,}" required>
-                <!--<input class="form-input-text" type="text" name="txtEmail" id="txtEmail" placeholder="Correo electrónico" pattern='/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/' required>-->
-                <input class="form-input-amount" type="number" min="0.00" step="any" id="txtOpenAmount" name="txtOpenAmount" placeholder="Ingrese monto de pago" required="" pattern="(0\.((0[1-9]{1})|([1-9]{1}([0-9]{1})?)))|(([1-9]+[0-9]*)(\.([0-9]{1,2}))?)">
+                <div class="float-form-line">
+                    <input class="form-input-text" type="text" name="txtName" id="txtName" placeholder="Nombres" required autofocus="">
+                    <input class="form-input-text" type="text" name="txtLastname" id="txtLastname" placeholder="Apellidos" required>
+                </div>
+                
+                <input class="form-input-email" type="email" name="txtEmail" id="txtEmail" placeholder="Correo electrónico" required>
+                <input class="form-input-amount" type="hidden" value="" id="txtPhoneNumber" name="txtPhoneNumber" placeholder="Celular" pattern="(0\.((0[1-9]{1})|([1-9]{1}([0-9]{1})?)))|(([1-9]+[0-9]*)(\.([0-9]{1,2}))?)">
+                <input class="form-input-amount" type="number" min="0.00" step="any" id="txtOpenAmount" name="txtOpenAmount" placeholder="Ingrese monto de pago" pattern="(0\.((0[1-9]{1})|([1-9]{1}([0-9]{1})?)))|(([1-9]+[0-9]*)(\.([0-9]{1,2}))?)" required="">
 
 
                 <div class="form-radio-currencies">
@@ -236,16 +267,17 @@
                 <input name="messagePaymentInstructions" type="hidden" value="<?php echo $messagePaymentInstructions ?>">
                 <input name="messagePaymentCopyRight" type="hidden" value="<?php echo $messagePaymentCopyRight ?>">
                 <input name="messagePaymentConfirmation" type="hidden" value="<?php echo $messagePaymentConfirmation ?>">
-
-
+                <input name="urlPaymentGatewayLogo" type="hidden" value="<?php echo $urlPaymentGatewayLogo ?>"> 
+                
+                
                 <input class="btn btn-lg btn-secondary btn-block" type="submit" name="btnFormOpenValue" value="<?php echo $messagePaymentButton ?>">
                 <br></br>
                 <p class="form-instructions"><?php echo $messagePaymentInstructions ?></p>
-                <p class="mt-5 mb-3 text-muted"><?php echo $messagePaymentCopyRight ?></p>
+                <input type="image" class="style-payment-gatewway-logo" src="<?php echo $urlPaymentGatewayLogo ?>"> 
+                <p class="mt-3 mb-1 text-muted"><?php echo $messagePaymentCopyRight ?></p>
             </form>
         </div>
     
     </body>
 
 </html>
-
